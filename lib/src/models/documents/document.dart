@@ -307,7 +307,7 @@ class Document {
             ops,
             op,
             res,
-            BlockEmbed.videoType,
+            embedType,
           );
         }
       }

@@ -244,7 +244,7 @@ class Document {
     assert(delta.isNotEmpty);
 
     var offset = 0;
-    delta = _transform(delta);
+    delta = _transform(delta, blockEmbedTypes: blockEmbedTypes);
     final originalDelta = toDelta();
     for (final op in delta.toList()) {
       final style =
@@ -290,13 +290,27 @@ class Document {
 
   bool get hasRedo => _history.hasRedo;
 
-  static Delta _transform(Delta delta) {
+  /// List of embed types that should be followed by a newline.
+  List<String> get blockEmbedTypes => [BlockEmbed.videoType];
+
+  static Delta _transform(Delta delta, {List<String>? blockEmbedTypes}) {
     final res = Delta();
     final ops = delta.toList();
     for (var i = 0; i < ops.length; i++) {
       final op = ops[i];
       res.push(op);
-      _autoAppendNewlineAfterEmbeddable(i, ops, op, res, BlockEmbed.videoType);
+
+      if (blockEmbedTypes != null) {
+        for (final embedType in blockEmbedTypes) {
+          _autoAppendNewlineAfterEmbeddable(
+            i,
+            ops,
+            op,
+            res,
+            BlockEmbed.videoType,
+          );
+        }
+      }
     }
     return res;
   }
